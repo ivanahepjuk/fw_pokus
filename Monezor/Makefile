@@ -20,7 +20,8 @@
 BINARY = monezor
 
 OPENCM3_DIR=../libopencm3
-LDSCRIPT = $(OPENCM3_DIR)/lib/stm32/f2/libopencm3_stm32f2.ld
+#LDSCRIPT = $(OPENCM3_DIR)/lib/stm32/f2/libopencm3_stm32f2.ld
+LDSCRIPT = ./monezor.ld
 
 include ../libopencm3.target.mk
 

@@ -39,6 +39,7 @@ OBJCOPY		:= $(PREFIX)-objcopy
 OBJDUMP		:= $(PREFIX)-objdump
 GDB		:= $(PREFIX)-gdb
 STFLASH		= $(shell which st-flash)
+DFUUTIL		= $(shell which dfu-util)
 STYLECHECK	:= /checkpatch.pl
 STYLECHECKFLAGS	:= --no-tree -f --terse --mailback
 STYLECHECKFILES	:= $(shell find . -name '*.[ch]')
@@ -55,7 +56,11 @@ OBJS		+= src/setup.o
 OBJS		+= src/util.o
 OBJS		+= src/bitmaps.o
 OBJS		+= src/fonts.o
-OBJS		+= src/buttons.o
+#OBJS		+= src/buttons.o
+OBJS		+= src/timer.o
+OBJS		+= src/usb.o
+#OBJS		+= src/messages.o
+
 #OBJS		+= src/newCfileHere.o
 
 
@@ -63,7 +68,7 @@ ifeq ($(strip $(OPENCM3_DIR)),)
 # user has not specified the library path, so we try to detect it
 
 # where we search for the library
-LIBPATHS := ./libopencm3 ../../../../libopencm3 ../../../../../libopencm3
+LIBPATHS := ./libopencm3 ../../../../libopencm3 ../../../../../libopencm3 ../libopencm3
 
 OPENCM3_DIR := $(wildcard $(LIBPATHS:=/locm3.sublime-project))
 OPENCM3_DIR := $(firstword $(dir $(OPENCM3_DIR)))
@@ -128,6 +133,7 @@ TGT_CPPFLAGS	+= $(DEFS)
 TGT_CPPFLAGS	+= -I./inc/
 
 
+
 ###############################################################################
 # Linker flags
 
@@ -145,6 +151,7 @@ endif
 
 LDLIBS		+= -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group
 
+
 ###############################################################################
 ###############################################################################
 ###############################################################################
@@ -153,7 +160,7 @@ LDLIBS		+= -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group
 .SECONDEXPANSION:
 .SECONDARY:
 
-all: elf
+all: elf bin hex
 
 elf: $(BINARY).elf
 bin: $(BINARY).bin
@@ -163,6 +170,11 @@ list: $(BINARY).list
 
 images: $(BINARY).images
 flash: $(BINARY).flash
+###########################
+# programming by dfu-util #
+###########################
+program: $(BINARY).program
+
 
 # Either verify the user provided LDSCRIPT exists, or generate it.
 ifeq ($(strip $(DEVICE)),)
@@ -218,7 +230,7 @@ print-%:
 
 clean:
 	@#printf "  CLEAN\n"
-	$(Q)$(RM) *.o *.d *.elf *.bin *.hex *.srec *.list *.map generated.* ${OBJS} ${OBJS:%.o:%.d}
+	$(Q)$(RM) ./src/*.o *.o *.d ./src/*.d *.elf *.bin *.hex *.srec *.list *.map generated.* ${OBJS} ${OBJS:%.o:%.d}
 
 stylecheck: $(STYLECHECKFILES:=.stylecheck)
 styleclean: $(STYLECHECKFILES:=.styleclean)
@@ -240,8 +252,17 @@ styleclean: $(STYLECHECKFILES:=.styleclean)
 	@printf "  FLASH  $<\n"
 	$(STFLASH) write $(*).bin 0x8000000
 
+
+###########################
+# programming by dfu-util #
+###########################
+%.program: %.bin
+	@printf "  FLASHING BY dfu-util   $<\n"
+	$(DFUUTIL) -a 0 -s 0x08000000:leave -D $(*).bin
+
 ifeq ($(BMP_PORT),)
 ifeq ($(OOCD_FILE),)
+
 %.flash: %.elf
 	@printf "  FLASH   $<\n"
 	(echo "halt; program $(realpath $(*).elf) verify reset" | nc -4 localhost 4444 2>/dev/null) || \
@@ -266,6 +287,6 @@ else
 		   $(*).elf
 endif
 
-.PHONY: images clean stylecheck styleclean elf bin hex srec list
+.PHONY: images clean stylecheck styleclean elf bin hex srec list program
 
 -include $(OBJS:.o=.d)

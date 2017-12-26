@@ -17,15 +17,47 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __LAYOUT_H__
-#define __LAYOUT_H__
+#include <string.h>
+#include <libopencm3/usb/usbd.h>
+#include <libopencm3/usb/hid.h>
+#include <libopencm3/stm32/gpio.h>
+#include "inc/bitmaps.h"
+#include "inc/display.h"
+#include "inc/setup.h"
+#include "inc/usb.h"
+#include "inc/util.h"
 
-#include <stdlib.h>
-#include <stdbool.h>
-#include "bitmaps.h"
 
-void layoutDialog(const BITMAP *icon, const char *btnNo, const char *btnYes, const char *desc, const char *line1, const char *line2, const char *line3, const char *line4, const char *line5, const char *line6);
-void layoutProgressUpdate(bool refresh);
-void layoutProgress(const char *desc, int permil);
+int main(void)
+{
+	setup();
+	oledInit();
+	usbInit();
 
-#endif
+	oledClear();
+	oledDrawBitmap(42, 11, &bmp_logo64);
+				
+	while(1) {
+		
+		usb_poll();
+		oledDrawBitmap(42, 11, &bmp_logo64);
+		oledRefresh();
+		
+		if (!gpio_get(GPIOC, GPIO5)){
+			oledDrawBitmap(10, 11, &bmp_logo64);
+			oledSwipeRight();
+			oledDrawBitmap(70, 11, &bmp_logo64);
+			oledSwipeLeft();
+		}
+		
+		if (!gpio_get(GPIOC, GPIO2)){
+			oledInvert(0,0,128,64);
+			delay(1000);
+			oledRefresh();
+		}
+		oledClear();
+	
+	}
+
+	return 0;
+}

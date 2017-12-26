@@ -15,4 +15,4 @@ ABOUT THIS REPOSITORY
 
 HOW TO START?
 
-	clone
+	clone,,, blablabla

@@ -44,7 +44,7 @@
 #define OLED_MEMORYMODE			0x20
 #define OLED_COMSCANINC			0xC0
 #define OLED_COMSCANDEC			0xC8 //0xC8
-#define OLED_SEGREMAP			0xB0 //0xA0
+#define OLED_SEGREMAP			0xB0 //0xA0 BO
 #define OLED_CHARGEPUMP			0x8D
 
 #define SPI_BASE			SPI1
@@ -397,6 +397,7 @@ void oledSwipeLeft(void)
 			_oledbuffer[j * OLED_WIDTH] = 0;
 		}
 		oledRefresh();
+		delay(70000);
 	}
 }
 
@@ -420,5 +421,7 @@ void oledSwipeRight(void)
 			_oledbuffer[j * OLED_WIDTH + OLED_WIDTH - 4] = 0;
 		}
 		oledRefresh();
+		delay(70000);
+		
 	}
 }

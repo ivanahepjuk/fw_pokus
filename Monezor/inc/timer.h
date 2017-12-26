@@ -1,7 +1,7 @@
 /*
  * This file is part of the TREZOR project, https://trezor.io/
  *
- * Copyright (C) 2014 Pavol Rusnak <stick@satoshilabs.com>
+ * Copyright (C) 2016 Saleem Rashid <trezor@saleemrashid.com>
  *
  * This library is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -17,33 +17,17 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __BUTTONS_H__
-#define __BUTTONS_H__
+#ifndef __TIMER_H__
+#define __TIMER_H__
 
-#include <libopencm3/stm32/gpio.h>
-#include <stdbool.h>
+#include <stdint.h>
 
-struct buttonState {
-	volatile bool YesUp;
-	volatile int YesDown;
-	volatile bool NoUp;
-	volatile int NoDown;
-};
+/* 1 tick = 1 ms */
+extern volatile uint32_t system_millis;
 
-extern struct buttonState button;
+/* Screen timeout */
+extern uint32_t system_millis_lock_start;
 
-void buttonUpdate(void);
-
-#ifndef BTN_PORT
-#define BTN_PORT	GPIOC
-#endif
-
-#ifndef BTN_PIN_YES
-#define BTN_PIN_YES	GPIO2
-#endif
-
-#ifndef BTN_PIN_NO
-#define BTN_PIN_NO	GPIO5
-#endif
+void timer_init(void);
 
 #endif
