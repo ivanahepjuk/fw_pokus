@@ -46,23 +46,8 @@ STYLECHECKFILES	:= $(shell find . -name '*.[ch]')
 OPT		:= -Os
 CSTD		?= -std=c99
 
-
 ###############################################################################
-# Source files (modify here after adding new .c files into src folder)
-
 OBJS		+= $(BINARY).o
-OBJS		+= src/display.o
-OBJS		+= src/setup.o
-OBJS		+= src/util.o
-OBJS		+= src/bitmaps.o
-OBJS		+= src/fonts.o
-#OBJS		+= src/buttons.o
-OBJS		+= src/timer.o
-OBJS		+= src/usb.o
-#OBJS		+= src/messages.o
-
-#OBJS		+= src/newCfileHere.o
-
 
 ifeq ($(strip $(OPENCM3_DIR)),)
 # user has not specified the library path, so we try to detect it
