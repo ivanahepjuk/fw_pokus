@@ -19,8 +19,20 @@
 
 BINARY = monezor
 
+
+###############################################################################
+# Source files (modify here after adding new .c files into src folder)
+
+OBJS		+= src/display.o
+OBJS		+= src/setup.o
+OBJS		+= src/util.o
+OBJS		+= src/bitmaps.o
+OBJS		+= src/fonts.o
+OBJS		+= src/timer.o
+OBJS		+= src/usb.o
+#OBJS		+= src/newCfileHere.
+
 OPENCM3_DIR=../libopencm3
-#LDSCRIPT = $(OPENCM3_DIR)/lib/stm32/f2/libopencm3_stm32f2.ld
 LDSCRIPT = ./monezor.ld
 
 include ../libopencm3.target.mk
